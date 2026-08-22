@@ -35,7 +35,7 @@ const Sidebar = ({ selectedUser, setSelectedUser }) => {
             className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer relative transition-all ${selectedUser?._id === user._id || selectedUser === user ? 'bg-[#282142]' : 'hover:bg-[#282142]/50'}`} 
             onClick={() => setSelectedUser(user)}
           >
-            <img src={user?.profilePic || assets.avatar_icon} alt="" className='w-[38px] aspect-square rounded-full object-cover' />
+            <img src={user?.profilePic || assets.avatar_icon} alt="" className='w-9.5 aspect-square rounded-full object-cover' />
             <div className='flex flex-col leading-5'>
               <p className='font-semibold text-sm'>{user.fullName}</p>
               {
@@ -43,7 +43,7 @@ const Sidebar = ({ selectedUser, setSelectedUser }) => {
                 ? <span className='text-green-400 text-xs'>Online</span>
                 : <span className='text-gray-400 text-xs'>Offline</span>
               }
-              <p className='text-xs text-gray-400 truncate max-w-[150px]'>{user.bio || user.status}</p>
+              <p className='text-xs text-gray-400 truncate max-w-37.5'>{user.bio || user.status}</p>
             </div>
             {index > 2 && (
               <p className='absolute right-3 top-1/2 -translate-y-1/2 text-xs h-5 w-5 flex justify-center items-center bg-red-500 text-white rounded-full font-medium'>
