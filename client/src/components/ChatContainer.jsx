@@ -156,7 +156,7 @@ const ChatContainer = ({ selectedUser, setSelectedUser }) => {
   ) : (
     <div className='flex flex-col items-center justify-center gap-3 text-gray-400 bg-white/10 max-md:hidden h-full p-6 text-center backdrop-blur-md border-2 border-gray-600 rounded-2xl'>
       <img src={assets.logo_icon} className='w-16 h-16 opacity-80' alt="logo" />
-      <p className='text-base font-medium text-gray-300'>Select a user to start chatting</p>
+      <p className='text-base font-medium text-gray-300'>Chat Anytime,Anywhere</p>
       <p className='text-xs text-gray-400 max-w-xs'>Choose a contact from the sidebar list to view messages and start conversation.</p>
     </div>
   )
