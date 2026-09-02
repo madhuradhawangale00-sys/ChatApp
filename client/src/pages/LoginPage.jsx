@@ -28,11 +28,12 @@ const LoginPage = () => {
       <form onSubmit={onSubmitHandler} className='border border-gray-600 bg-black/30 text-white p-6 flex flex-col gap-5 rounded-xl shadow-2xl w-full max-w-sm backdrop-blur-md'> 
         <h2 className='font-semibold text-2xl flex justify-between items-center capitalize'>
           {currentState}
+          
           {isDataSubmitted && (
             <img 
               onClick={() => setIsDataSubmitted(false)} 
               src={assets.arrow_icon} 
-              alt="Back" 
+              alt="" 
               className='w-5 cursor-pointer hover:opacity-80' 
             />
           )}
