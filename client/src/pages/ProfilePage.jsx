@@ -60,7 +60,7 @@ const ProfilePage = () => {
 
           <button 
             type="submit" 
-            className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-medium py-3 rounded-md transition-all duration-300 cursor-pointer mt-2"
+            className="bg-linear-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-medium py-3 rounded-md transition-all duration-300 cursor-pointer mt-2"
           >
             Save Profile
           </button>
