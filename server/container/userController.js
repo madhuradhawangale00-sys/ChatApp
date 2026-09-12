@@ -33,7 +33,7 @@ export const signup = async (req,res) => {
 }
 
 //controller to login user
-const login = async( req, res) => {
+export const login = async( req, res) => {
     try{
 
         const { email, password } = req.body;
@@ -55,3 +55,5 @@ const login = async( req, res) => {
         res.json({success: false, message: error.message});
     }
 }
+
+
