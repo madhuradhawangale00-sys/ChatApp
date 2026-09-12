@@ -1,13 +1,30 @@
+# Dependencies
 node_modules/
+**/node_modules/
+
+# Production builds
 dist/
+**/dist/
 dist-ssr/
-*.local
+**/dist-ssr/
+
+# Environment variables & secrets
 .env
 .env.*
 !.env.example
-*.log
-logs
-.vscode/
-.idea
-.DS_Store
+*.env
 
+# Editor & System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs & Temporary files
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
