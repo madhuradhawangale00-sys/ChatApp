@@ -11,7 +11,8 @@ const server = http.createServer(app);
 app.use(express.json({limit: "4mb"}));
 app.use(cors());
 
-app.get("/api/status", (req, res) => {
+
+app.use("/api/status", (req, res) => {
     res.send("Server is running");
 });
 
