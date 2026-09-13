@@ -1,6 +1,7 @@
 import cloudinary from "../lib/cloudinary.js";
 import Message from "../model/Message.js";
 import User from "../model/User.js";
+import {io, userScoketMap} from "../server.js";
 
 
 //get all users except the logged in user
@@ -72,7 +73,7 @@ export const markMessageAsSeen = async (req,res) => {
 }
 
 
-//send msg selected users
+//send msg to selected users
 export const sendMessage = async (req,res)=>{
 
     try{
@@ -94,8 +95,16 @@ export const sendMessage = async (req,res)=>{
             image: imageUrl
         })
 
+
+        //emit new message to the receiver socket
+
+        const receiverSocketId = userScoketMap[receiverId];
+        if(receiverSocketId){
+            io.to(receiverSocketId).emit("newMessage", newMessage)
+        }
+
         res.json({success: true, newMessage});
-        
+
 
 
     }catch(error){
