@@ -1,13 +1,13 @@
-import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
+
+import express from "express";
 import cors from "cors";
 import http from "http";
 import { connectDB } from "./lib/db.js";
 import userRouter from "./routes/userRoutes.js";
 import messageRouter from "./routes/messageRoutes.js";
 import { Server } from "socket.io";
-
-dotenv.config();
 
 //create express app and http server
 const app = express();
@@ -39,7 +39,8 @@ io.on("connection", (socket) => {
 });
 
 //middleware setup
-app.use(express.json({ limit: "4mb" }));
+app.use(express.json({ limit: "15mb" }));
+app.use(express.urlencoded({ limit: "15mb", extended: true }));
 app.use(cors());
 
 //routes setup

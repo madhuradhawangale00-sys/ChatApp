@@ -12,6 +12,8 @@ const ProfilePage = () => {
   const [name, setName] = useState(authUser?.fullName || '')
   const [bio, setBio] = useState(authUser?.bio || '')
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   useEffect(() => {
     if (authUser) {
       setName(authUser.fullName || '')
@@ -21,18 +23,32 @@ const ProfilePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedImg) {
-      await updateProfile({ fullName: name, bio })
-      navigate('/');
-      return;
-    }
+    if (isSubmitting) return;
 
-    const reader = new FileReader();
-    reader.readAsDataURL(selectedImg);
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      await updateProfile({ profilePic: base64Image, fullName: name, bio })
-      navigate('/');
+    try {
+      setIsSubmitting(true)
+      let profilePic = undefined
+
+      if (selectedImg) {
+        profilePic = await new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.readAsDataURL(selectedImg)
+          reader.onload = () => resolve(reader.result)
+          reader.onerror = (err) => reject(err)
+        })
+      }
+
+      const payload = { fullName: name, bio }
+      if (profilePic) payload.profilePic = profilePic
+
+      const success = await updateProfile(payload)
+      if (success) {
+        navigate('/')
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -81,9 +97,10 @@ const ProfilePage = () => {
 
           <button 
             type="submit" 
-            className="bg-linear-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-medium py-3 rounded-md transition-all duration-300 cursor-pointer mt-2"
+            disabled={isSubmitting}
+            className="bg-linear-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-medium py-3 rounded-md transition-all duration-300 cursor-pointer mt-2 disabled:opacity-50"
           >
-            Save Profile
+            {isSubmitting ? "Saving..." : "Save Profile"}
           </button>
         </form>
 
