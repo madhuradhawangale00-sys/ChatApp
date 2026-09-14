@@ -1,18 +1,39 @@
-import React, { useState } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import assets from '../assets/assets'
+import { AuthContext } from '../../context/AuthContext'
 
 const ProfilePage = () => {
 
-  const [selectedImg, setselectedImg] = useState(null)
-  const navigate = useNavigate()
-  const [name, setName] = useState("Martin Johnson")
-  const [bio, setBio] = useState("Hi Everyone, I am using QuickChat")
+  const { authUser, updateProfile } = useContext(AuthContext)
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log({ name, bio, selectedImg })
-    navigate('/')
+  const [selectedImg, setSelectedImg] = useState(null)
+  const navigate = useNavigate()
+  const [name, setName] = useState(authUser?.fullName || '')
+  const [bio, setBio] = useState(authUser?.bio || '')
+
+  useEffect(() => {
+    if (authUser) {
+      setName(authUser.fullName || '')
+      setBio(authUser.bio || '')
+    }
+  }, [authUser])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedImg) {
+      await updateProfile({ fullName: name, bio })
+      navigate('/');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(selectedImg);
+    reader.onload = async () => {
+      const base64Image = reader.result;
+      await updateProfile({ profilePic: base64Image, fullName: name, bio })
+      navigate('/');
+    }
   }
 
   return (
@@ -24,14 +45,14 @@ const ProfilePage = () => {
           
           <label htmlFor="avatar" className='flex items-center gap-4 cursor-pointer group'>
             <input 
-              onChange={(e) => e.target.files && e.target.files[0] && setselectedImg(e.target.files[0])} 
+              onChange={(e) => e.target.files && e.target.files[0] && setSelectedImg(e.target.files[0])} 
               type="file" 
               id='avatar' 
               accept='.png, .jpg, .jpeg' 
               hidden 
             />
             <img 
-              src={selectedImg ? URL.createObjectURL(selectedImg) : assets.avatar_icon} 
+              src={selectedImg ? URL.createObjectURL(selectedImg) : (authUser?.profilePic || assets.avatar_icon)} 
               alt="Profile Avatar" 
               className='w-16 h-16 rounded-full object-cover border-2 border-indigo-500 group-hover:opacity-80 transition-opacity' 
             />
@@ -68,9 +89,9 @@ const ProfilePage = () => {
 
         <div className='flex flex-col items-center justify-center p-4 min-w-40'>
           <img 
-            src={selectedImg ? URL.createObjectURL(selectedImg) : assets.logo_icon} 
+            src={selectedImg ? URL.createObjectURL(selectedImg) : (authUser?.profilePic || assets.logo_icon)} 
             alt="Logo / Preview" 
-            className={`object-cover ${selectedImg ? 'w-36 h-36 rounded-full border-4 border-indigo-500/50 shadow-lg' : 'w-40 h-auto opacity-80'}`} 
+            className={`object-cover ${selectedImg || authUser?.profilePic ? 'w-36 h-36 rounded-full border-4 border-indigo-500/50 shadow-lg' : 'w-40 h-auto opacity-80'}`} 
           />
         </div>
 
