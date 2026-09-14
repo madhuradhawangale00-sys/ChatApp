@@ -75,11 +75,22 @@ export const updateProfile = async (req, res) => {
         if (!profilePic) {
             updatedUser = await User.findByIdAndUpdate(userId, { bio, fullName }, { new: true });
         } else {
-            const upload = await cloudinary.uploader.upload(profilePic);
-
-            updatedUser = await User.findByIdAndUpdate(userId, { profilePic: upload.secure_url, fullName, bio },
-                { new: true }
-            );
+            try {
+                const upload = await cloudinary.uploader.upload(profilePic);
+                updatedUser = await User.findByIdAndUpdate(userId, { profilePic: upload.secure_url, fullName, bio },
+                    { new: true }
+                );
+            } catch (cloudErr) {
+                console.error("Cloudinary Upload Error:", cloudErr.message);
+                // Fallback to storing Base64 image if Cloudinary fails due to API key permission errors
+                if (profilePic.startsWith("data:image/")) {
+                    updatedUser = await User.findByIdAndUpdate(userId, { profilePic: profilePic, fullName, bio },
+                        { new: true }
+                    );
+                } else {
+                    return res.json({ success: false, message: "Image Upload Failed: " + cloudErr.message });
+                }
+            }
         }
         res.json({ success: true, user: updatedUser });
 
