@@ -1,6 +1,7 @@
 import { Children, createContext, useState } from "react";
 import axios from 'axios';
 import toast from "react-hot-toast";
+import {io} from "socket.io-client";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.baseURL = backendUrl;
@@ -22,6 +23,8 @@ export const AuthProvider = ({children}) => {
             const { data } = await axios.get("/api/auth/check");
             if(data.success) {
                 setAuthUser(data.user)
+                connectSocket(data.user)
+
             }
  
         } catch (error) {
@@ -30,12 +33,87 @@ export const AuthProvider = ({children}) => {
         }
     }
 
+    //Login function to handle user authenticar=tion and socket connection
+
+    const login = async (state, credentials) => {
+        try {
+            const {data} = await axios.post(`/api/auth/${state}`, credentials);
+            if(data.success){
+                setAuthUser(data.userData);
+                connectSocket(data.userData);
+                axios.defaults.headers.comman["token"] = data.token;
+                setToken(data.token);
+                localStorage.setItem("token", data.token)
+                toast.success(data.message)
+            }else{
+                toast.error(error.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+            
+        }
+    }
+
+    // logout sunction to handle user logout and socket disconnection
+
+
+    const logout = async () => {
+        localStorage.removeItem("token");
+        setToken(null);
+        setAuthUser(null);
+        setOnlineUsers([]);
+        axios.defaults.headers.comman["token"] = null;
+        toast.success("Logged out successfully")
+        socket.disconnect();
+    }
+
+    // Update profile function to handle user profile updates
+    const updateProfile = async (body) => {
+        try {
+            const {data} = await axios.put("/api/auth/update-profile", body);
+            if(data.success){
+                setAuthUser(data.user);
+                toast.success("Profile updated successfully")
+            }
+            
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+
+
+
+
+    // Connect socket function to handle socket connection and online users updates
+    const connectSocket = (userData) => {
+        if(!userData || socket?.connected) return;
+        const newSocket = io(backendUrl, {
+            query: {
+                userId: userData._id,
+            }
+        });
+        newSocket.on("getOnlineUsers", (userIds)=>{
+            setOnlineUsers(userIds);
+        })
+    }
+
+    useEffect(()=>{
+        if(token){
+            axios.defaults.headers.comman["token"] = token;
+
+        }
+        checkAuth();
+    }, [])
+
     const value = {
 
         axios,
         authUser,
         onlineUsers,
-        socket
+        socket,
+        login,
+        logout,
+        updateProfile
 
     }
 
