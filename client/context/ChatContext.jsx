@@ -20,7 +20,7 @@ export const ChatProvider = ({children})=>{
            const {data} = await axios.get("/api/messages/users");
            if(data.success){
             setUsers(data.users)
-            setUnseenMessages(data.unseenMessages)
+            setUnseenMessages(data.unseenMessages || {})
            }
         } catch (error) {
             toast.error(error.message)
@@ -37,14 +37,13 @@ export const ChatProvider = ({children})=>{
            }
         } catch (error) {
             toast.error(error.message)
-
-            
         }
     }
 
     //function  to send message to selected user
     const sendMessage = async (messageData)=>{
           try {
+            if(!selectedUser?._id) return;
             const {data} = await axios.post(`/api/messages/send/${selectedUser._id}`, messageData);
             if(data.success){
                 setMessages((prevMessages)=>[...prevMessages, data.newMessage])
@@ -70,8 +69,7 @@ export const ChatProvider = ({children})=>{
             }else{
                 setUnseenMessages((prevUnseenMessages)=>({
                     ...prevUnseenMessages, [newMessage.senderId]:
-                    prevUnseenMessages[newMessage.senderId] ? prevUnseenMessages
-                    [newMessage.senderId] + 1 : 1
+                    (prevUnseenMessages[newMessage.senderId] || 0) + 1
                 }))
             }
         })
@@ -87,9 +85,19 @@ export const ChatProvider = ({children})=>{
         return ()=> unsubscribeFromMessages();
     },[socket, selectedUser])
 
+    useEffect(()=>{
+        if(selectedUser?._id){
+            getMessages(selectedUser._id);
+            setUnseenMessages((prev) => ({
+                ...prev,
+                [selectedUser._id]: 0
+            }));
+        }
+    }, [selectedUser]);
+
 
     const value = {
-        messages, users, selectedUser, getUsers, setMessages, sendMessage, setSelectedUser,
+        messages, users, selectedUser, getUsers, getMessages, sendMessage, setSelectedUser,
         unseenMessages, setUnseenMessages
     }
 
@@ -99,5 +107,6 @@ export const ChatProvider = ({children})=>{
         </ChatContext.Provider>
     )
 }
+
 
 
