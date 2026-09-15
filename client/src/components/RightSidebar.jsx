@@ -66,7 +66,7 @@ const RightSidebar = ({ selectedUser }) => {
       <div className="pt-4 mt-auto">
         <button 
           onClick={logout} 
-          className='w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white text-xs font-semibold py-3 rounded-full cursor-pointer transition-all shadow-lg hover:shadow-purple-500/20 active:scale-95'
+          className='w-full bg-linear-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white text-xs font-semibold py-3 rounded-full cursor-pointer transition-all shadow-lg hover:shadow-purple-500/20 active:scale-95'
         >
           Logout
         </button>
