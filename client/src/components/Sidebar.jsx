@@ -7,7 +7,7 @@ import { ChatContext } from '../../context/ChatContext'
 const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser, unseenMessages, setUnseenMessages } = useContext(ChatContext);
   const navigate = useNavigate();
-  const { logout, onlineUsers } = useContext(AuthContext);
+  const { authUser, logout, onlineUsers } = useContext(AuthContext);
   const [input, setInput] = useState('');
 
   const filterdUsers = input
@@ -58,43 +58,50 @@ const Sidebar = () => {
       </div>
 
       <div className='flex flex-col gap-2 mt-4 overflow-y-auto flex-1 pr-1'>
-        {filterdUsers.map((user, index) => {
-          const isSelected = selectedUser?._id === user._id || selectedUser === user;
-          const isOnline = onlineUsers?.includes(user._id);
-          const unreadCount = unseenMessages?.[user._id];
+        {filterdUsers.length > 0 ? (
+          filterdUsers.map((user, index) => {
+            const isSelected = selectedUser?._id === user._id || selectedUser === user;
+            const isOnline = onlineUsers?.includes(user._id);
+            const unreadCount = unseenMessages?.[user._id];
 
-          return (
-            <div
-              key={user._id || index}
-              className={`flex items-center gap-3 p-3 rounded-2xl cursor-pointer relative transition-all ${
-                isSelected ? 'bg-[#1a142e] border border-gray-700/60 shadow-md' : 'hover:bg-[#1a142e]/40'
-              }`}
-              onClick={() => handleUserClick(user)}
-            >
-              <div className='relative shrink-0'>
-                <img
-                  src={user?.profilePic || assets.avatar_icon}
-                  alt={user.fullName}
-                  className='w-10 h-10 rounded-full object-cover border border-gray-600'
-                />
-                {isOnline && (
-                  <span className='w-2.5 h-2.5 rounded-full bg-green-500 absolute bottom-0 right-0 border border-black'></span>
+            return (
+              <div
+                key={user._id || index}
+                className={`flex items-center gap-3 p-3 rounded-2xl cursor-pointer relative transition-all ${
+                  isSelected ? 'bg-[#1a142e] border border-gray-700/60 shadow-md' : 'hover:bg-[#1a142e]/40'
+                }`}
+                onClick={() => handleUserClick(user)}
+              >
+                <div className='relative shrink-0'>
+                  <img
+                    src={user?.profilePic || assets.avatar_icon}
+                    alt={user.fullName}
+                    className='w-10 h-10 rounded-full object-cover border border-gray-600'
+                  />
+                  {isOnline && (
+                    <span className='w-3 h-3 rounded-full bg-green-500 absolute bottom-0 right-0 border-2 border-[#0f0a21] shadow-sm' title="Online"></span>
+                  )}
+                </div>
+                <div className='flex flex-col leading-tight min-w-0 flex-1'>
+                  <p className='font-semibold text-sm text-white truncate'>{user.fullName}</p>
+                  <span className={`text-xs font-medium flex items-center gap-1 ${isOnline ? 'text-green-400' : 'text-gray-400'}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-green-400' : 'bg-gray-500'}`}></span>
+                    {isOnline ? 'Online' : 'Offline'}
+                  </span>
+                </div>
+                {unreadCount > 0 && (
+                  <span className='text-xs h-5 min-w-5 px-1.5 flex justify-center items-center bg-purple-600 text-white rounded-full font-bold shadow-md animate-pulse shrink-0'>
+                    {unreadCount}
+                  </span>
                 )}
               </div>
-              <div className='flex flex-col leading-tight min-w-0 flex-1'>
-                <p className='font-semibold text-sm text-white truncate'>{user.fullName}</p>
-                <span className={`text-xs font-medium ${isOnline ? 'text-green-400' : 'text-gray-400'}`}>
-                  {isOnline ? 'Online' : 'Offline'}
-                </span>
-              </div>
-              {unreadCount > 0 && (
-                <p className='text-xs h-5 min-w-5 px-1.5 flex justify-center items-center bg-purple-600 text-white rounded-full font-semibold shadow-sm'>
-                  {unreadCount}
-                </p>
-              )}
-            </div>
-          );
-        })}
+            );
+          })
+        ) : (
+          <div className='flex items-center justify-center h-40 text-gray-400 text-xs text-center px-4'>
+            No other registered users found
+          </div>
+        )}
       </div>
     </div>
   );

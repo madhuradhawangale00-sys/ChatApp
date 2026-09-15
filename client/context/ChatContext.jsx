@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import toast from "react-hot-toast";
 
@@ -13,6 +13,11 @@ export const ChatProvider = ({children})=>{
     const [unseenMessages, setUnseenMessages] = useState({})
 
     const {socket, axios} = useContext(AuthContext);
+
+    const selectedUserRef = useRef(selectedUser);
+    useEffect(() => {
+        selectedUserRef.current = selectedUser;
+    }, [selectedUser]);
 
     // function to get all users for sidebar
     const getUsers = async ()=> {
@@ -58,18 +63,21 @@ export const ChatProvider = ({children})=>{
 
 
     // function to subscribe to message for selected user
-    const subscribeToMessages = async ()=>{
+    const subscribeToMessages = ()=>{
         if(!socket) return ;
 
+        socket.off("newMessage");
+
         socket.on("newMessage", (newMessage)=>{
-            if(selectedUser && newMessage.senderId === selectedUser._id){
+            const currentSelected = selectedUserRef.current;
+            if(currentSelected && newMessage.senderId === currentSelected._id){
                 newMessage.seen = true;
                 setMessages((prevMessages)=> [...prevMessages, newMessage]);
                 axios.put(`/api/messages/mark/${newMessage._id}`);
             }else{
                 setUnseenMessages((prevUnseenMessages)=>({
-                    ...prevUnseenMessages, [newMessage.senderId]:
-                    (prevUnseenMessages[newMessage.senderId] || 0) + 1
+                    ...prevUnseenMessages,
+                    [newMessage.senderId]: (prevUnseenMessages[newMessage.senderId] || 0) + 1
                 }))
             }
         })
@@ -81,9 +89,11 @@ export const ChatProvider = ({children})=>{
     }
 
     useEffect(()=>{
-        subscribeToMessages();
+        if(socket){
+            subscribeToMessages();
+        }
         return ()=> unsubscribeFromMessages();
-    },[socket, selectedUser])
+    },[socket])
 
     useEffect(()=>{
         if(selectedUser?._id){

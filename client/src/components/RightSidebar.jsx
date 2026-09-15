@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import assets, { imagesDummyData } from '../assets/assets'
+import assets from '../assets/assets'
 import { AuthContext } from '../../context/AuthContext'
 import { ChatContext } from '../../context/ChatContext'
 
@@ -30,21 +30,25 @@ const RightSidebar = ({ selectedUser }) => {
       <hr className="border-[#ffffff50] my-4" />
       <div className="px-5 text-xs">
         <p className="font-medium text-white/80">Media</p>
-        <div className="mt-2 max-h-48 overflow-y-auto grid grid-cols-2 gap-3 opacity-80">
-          {(mediaImages.length > 0 ? mediaImages : imagesDummyData).map((url, index) => (
-            <div
-              key={index}
-              onClick={() => window.open(url, '_blank')}
-              className="cursor-pointer rounded-md overflow-hidden"
-            >
-              <img
-                src={url}
-                alt={`Media ${index}`}
-                className="w-full h-24 object-cover rounded-md hover:scale-105 transition-transform duration-200"
-              />
-            </div>
-          ))}
-        </div>
+        {mediaImages.length > 0 ? (
+          <div className="mt-2 max-h-48 overflow-y-auto grid grid-cols-2 gap-3 opacity-80">
+            {mediaImages.map((url, index) => (
+              <div
+                key={index}
+                onClick={() => window.open(url, '_blank')}
+                className="cursor-pointer rounded-md overflow-hidden"
+              >
+                <img
+                  src={url}
+                  alt={`Media ${index}`}
+                  className="w-full h-24 object-cover rounded-md hover:scale-105 transition-transform duration-200"
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-400 text-center py-4 text-xs">No media shared yet</p>
+        )}
       </div>
 
       <button onClick={logout} className='absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-400 to-violet-600 text-white border-none text-sm font-light py-2 px-20 rounded-full cursor-pointer hover:opacity-90 transition-opacity'>
