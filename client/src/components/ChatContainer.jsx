@@ -48,17 +48,25 @@ const ChatContainer = ({ selectedUser, setSelectedUser, showRightSidebar, setSho
       toast.error("Please select an image file")
       return
     }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image file size should be less than 5MB")
+      return
+    }
 
+    const inputElement = e.target
     const reader = new FileReader()
     reader.onloadend = async () => {
       try {
         setIsSending(true)
-        await sendMessage({ image: reader.result })
+        const base64Image = reader.result
+        if (base64Image) {
+          await sendMessage({ image: base64Image })
+        }
       } catch (err) {
         toast.error("Failed to send image")
       } finally {
         setIsSending(false)
-        e.target.value = ""
+        if (inputElement) inputElement.value = ""
       }
     }
     reader.readAsDataURL(file)

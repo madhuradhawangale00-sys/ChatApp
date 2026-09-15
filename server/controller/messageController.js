@@ -71,17 +71,22 @@ export const sendMessage = async (req, res) => {
         const receiverId = req.params.id;
         const senderId = req.user._id;
 
-        let imageUrl;
+        let imageUrl = "";
         if (image) {
-            const uploadResponse = await cloudinary.uploader.upload(image);
-            imageUrl = uploadResponse.secure_url;
+            try {
+                const uploadResponse = await cloudinary.uploader.upload(image);
+                imageUrl = uploadResponse.secure_url;
+            } catch (cloudErr) {
+                console.log("Cloudinary Upload Error, using image fallback:", cloudErr.message);
+                imageUrl = image;
+            }
         }
 
         const newMessage = await Message.create({
             senderId,
             receiverId,
-            text,
-            image: imageUrl
+            text: text || "",
+            image: imageUrl || ""
         });
 
         //emit new message to the receiver socket
