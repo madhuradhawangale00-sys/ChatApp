@@ -6,12 +6,12 @@ import { ChatContext } from '../../context/ChatContext'
 
 const HomePage = () => {
   const { selectedUser, setSelectedUser } = useContext(ChatContext);
-  const [showRightSidebar, setShowRightSidebar] = useState(false);
+  const [showRightSidebar, setShowRightSidebar] = useState(true);
 
   return (
     <div className='w-full h-screen sm:px-[10%] sm:py-[4%] flex items-center justify-center relative overflow-hidden bg-black/40'>
       {/* Background glowing circle like in QuickChat screenshot */}
-      <div className='absolute w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[120px] pointer-events-none top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'></div>
+      <div className='absolute w-125 h-125 bg-purple-600/30 rounded-full blur-[120px] pointer-events-none top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'></div>
 
       <div className={`backdrop-blur-2xl border border-gray-700/60 rounded-2xl 
           overflow-hidden h-full w-full grid grid-cols-1 relative z-10 ${
